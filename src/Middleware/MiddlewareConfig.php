@@ -72,24 +72,17 @@ class MiddlewareConfig
             return [];
         }
 
-        if (is_array($groupKey)) {
-            $configGroupKey = [];
-            foreach ($groupKey as $key) {
-                if (!isset($config['group'][$key])) {
-                    throw new InvalidArgumentException('Invalid Group name in MiddlewareManager, see: http://zanphpdoc.zanphp.io/libs/middleware/filters.html#tcp');
-                }
-                foreach ($config['group'][$key] as $item) {
-                    $configGroupKey[] = $item;
-                }
+        $groupKeys = is_array($groupKey) ? $groupKey : [$groupKey];
+        $configGroupKey = [];
+        foreach ($groupKeys as $key) {
+            if (!isset($config['group'][$key])) {
+                throw new InvalidArgumentException('Invalid Group name in MiddlewareManager, see: http://zanphpdoc.zanphp.io/libs/middleware/filters.html#tcp');
             }
-            return $configGroupKey;
+            foreach ($config['group'][$key] as $item) {
+                $configGroupKey[] = $item;
+            }
         }
-
-        if (!isset($config['group'][$groupKey])) {
-            throw new InvalidArgumentException('Invalid Group name in MiddlewareManager, see: http://zanphpdoc.zanphp.io/libs/middleware/filters.html#tcp');
-        }
-
-        return $config['group'][$groupKey];
+        return array_unique($configGroupKey);
     }
 
     public function getRequestFilters($request)
